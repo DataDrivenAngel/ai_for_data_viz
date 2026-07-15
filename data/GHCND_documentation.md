@@ -1,6 +1,10 @@
 # GHCN (Global Historical Climatology Network) – Daily Documentation
 
-**NOTE:** English units are displayed on pdf output format; Either Metric or standard English units on csv or txt output formats depending on user specification.
+Extracted from the official PDF.
+
+Data (4354766.csv) downloaded from https://www.ncei.noaa.gov/cdo-web/search?datasetid=GHCND on 2026-07-15
+
+
 
 ## I. Description
 

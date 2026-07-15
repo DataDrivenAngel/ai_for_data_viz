@@ -1,3 +1,24 @@
+# AI for Data Visualization
+## Workshop
+
+### Agenda
+
+1. Overviews: 
+    -  **Fundamentals of Data Visualization**
+    -  **Integrating AI in Data Visualization**
+    -  **Risks and Limitations**
+2. Hands on Workshop:
+    - Creating a visualization 
+
+Workshop:
+
+1. Data Analysis via ChatAI
+2. Infographics via ChatAI
+3. Interactive dashboard via ChatAI
+4. Code generation via local Agentic Coding Agent.
+
+
+
 # I. Fundamentals of Data Visualization
 
 * **Primary Goal:** Effective communication.
@@ -52,3 +73,17 @@ quadrantChart
 * **Accuracy:** Risk of "hallucinations" or incorrect data analysis.
 * **Robustness:** AI is less robust than a skilled human expert when handling non-obvious data.
 * **Requirement:** Human oversight is essential; users must remain suspicious and thoughtful regarding AI outputs.
+
+
+
+Workshop:
+
+1. Data Analysis via ChatAI (ChatGPT, Claude, Gemini, Etc)
+
+2. Infographics via ChatAI (ChatGPT, Claude, Gemini, Etc)
+
+
+
+3. Interactive dashboard via ChatAI (ChatGPT, Claude, Gemini, Etc)
+
+4. Code generation via local Agentic Coding Agent. (Claude Code, OpenAI Codex, OpenCode, etc)
