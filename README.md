@@ -13,11 +13,20 @@
 Workshop:
 
 1. Data Analysis via ChatAI
+
+Use Claude or ChatGPT or another system to analyize a dataset. Try asking it a question about the weather dataset in data/4354766.csv. Does it give good answers and perform good analysis?
+
 2. Infographics via ChatAI
+
+Use Claude or Gemini or another system to make an inforgraphic. I recommend using an existing data source or summary. Take a look at some of the reports that the Ballston BID has and make an infographic out of one of them:  https://www.ballstonva.org/ballston-bid/plansandreports/
+
 3. Interactive dashboard via ChatAI
+
+Use Claude or Gemini or another system to make an interactive dashboard.   Use the weather dataset in data/4354766.csv. Is the dashboard interactive and correct?
+
 4. Code generation via local Agentic Coding Agent.
 
-
+Use Claude Code or another agentic coding tool to make an interactive dashboard using the weather dataset. Is the dashboard interactive and correct?
 
 # I. Fundamentals of Data Visualization
 

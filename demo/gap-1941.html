@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The 1941 Gap — A Half-Year Masquerading as a Full Year</title>
+<style>
+  /* minimal reset */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; min-height: 100vh; }
+  img, svg { vertical-align: middle; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+</style>
+</head>
+<body>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --muted:          #898781;
+    --grid:           #e1e0d9;
+    --baseline:       #c3c2b7;
+    --series-1:       #2a78d6;
+    --series-1-wash:  rgba(42,120,214,0.10);
+    --critical:       #d03b3b;
+    --critical-wash:  rgba(208,59,59,0.09);
+    --border:         rgba(11,11,11,0.10);
+    --gap-fill:       rgba(11,11,11,0.045);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page:           #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --muted:          #898781;
+      --grid:           #2c2c2a;
+      --baseline:       #383835;
+      --series-1:       #3987e5;
+      --series-1-wash:  rgba(57,135,229,0.12);
+      --critical:       #d03b3b;
+      --critical-wash:  rgba(208,59,59,0.14);
+      --border:         rgba(255,255,255,0.10);
+      --gap-fill:       rgba(255,255,255,0.05);
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page:           #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --muted:          #898781;
+    --grid:           #2c2c2a;
+    --baseline:       #383835;
+    --series-1:       #3987e5;
+    --series-1-wash:  rgba(57,135,229,0.12);
+    --critical:       #d03b3b;
+    --critical-wash:  rgba(208,59,59,0.14);
+    --border:         rgba(255,255,255,0.10);
+    --gap-fill:       rgba(255,255,255,0.05);
+  }
+
+  .viz-root {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--text-primary);
+    padding: 40px 24px 72px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+
+  header { margin-bottom: 28px; }
+  .eyebrow {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+  }
+  h1 { font-size: 30px; font-weight: 650; letter-spacing: -0.02em; margin: 0 0 10px; line-height: 1.2; }
+  .standfirst { font-size: 16px; color: var(--text-secondary); max-width: 68ch; margin: 0; }
+
+  .verdict {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-left: 3px solid var(--critical);
+    border-radius: 8px; padding: 14px 16px; margin: 24px 0 28px;
+  }
+  .verdict-icon { flex: 0 0 auto; color: var(--critical); font-size: 15px; line-height: 1.5; font-weight: 700; }
+  .verdict-body { font-size: 14.5px; color: var(--text-secondary); }
+  .verdict-body strong { color: var(--text-primary); font-weight: 620; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 32px; }
+  .tile {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; padding: 15px 16px 16px;
+  }
+  .tile-label { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 7px; }
+  .tile-value { font-size: 27px; font-weight: 640; letter-spacing: -0.02em; line-height: 1.1; }
+  .tile-sub { font-size: 12px; color: var(--muted); margin-top: 5px; }
+  .tile-value .unit { font-size: 16px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0; }
+
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 10px; padding: 22px 22px 18px; margin-bottom: 20px;
+  }
+  .card-title { font-size: 16.5px; font-weight: 620; margin: 0 0 5px; letter-spacing: -0.01em; }
+  .card-sub { font-size: 13.5px; color: var(--text-secondary); margin: 0 0 18px; max-width: 78ch; }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--text-secondary); }
+  .swatch { width: 14px; height: 3px; border-radius: 2px; flex: 0 0 auto; }
+  .swatch.dot { width: 9px; height: 9px; border-radius: 50%; }
+  .swatch.block { width: 13px; height: 11px; border-radius: 2px; }
+
+  .chart-scroll { overflow-x: auto; }
+  svg { display: block; width: 100%; height: auto; }
+  .gl { stroke: var(--grid); stroke-width: 1; }
+  .axis-line { stroke: var(--baseline); stroke-width: 1; }
+  .tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .axis-title { fill: var(--text-secondary); font-size: 11.5px; font-weight: 550; }
+  .annot { fill: var(--text-secondary); font-size: 11.5px; }
+  .annot-strong { fill: var(--text-primary); font-size: 12px; font-weight: 620; }
+  .leader { stroke: var(--muted); stroke-width: 1; }
+
+  .tooltip {
+    position: fixed; pointer-events: none; z-index: 50; opacity: 0;
+    transition: opacity 0.1s; background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: 7px;
+    padding: 9px 11px; font-size: 12.5px; color: var(--text-primary);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.16); min-width: 130px;
+  }
+  .tt-title { font-weight: 640; margin-bottom: 5px; font-size: 13px; }
+  .tt-row { display: flex; justify-content: space-between; gap: 14px; color: var(--text-secondary); line-height: 1.65; }
+  .tt-row b { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tt-flag { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); color: var(--critical); font-weight: 600; font-size: 11.5px; }
+
+  details.table-view { margin-top: 4px; }
+  details.table-view summary {
+    cursor: pointer; font-size: 13.5px; color: var(--text-secondary);
+    padding: 9px 0; font-weight: 550; user-select: none;
+  }
+  details.table-view summary:hover { color: var(--text-primary); }
+  .table-scroll { max-height: 340px; overflow: auto; border: 1px solid var(--border); border-radius: 7px; margin-top: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  th, td { padding: 7px 12px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th {
+    position: sticky; top: 0; background: var(--surface-1); color: var(--text-secondary);
+    font-weight: 600; border-bottom: 1px solid var(--baseline); font-size: 11.5px;
+    letter-spacing: 0.03em; text-transform: uppercase;
+  }
+  tbody tr { border-bottom: 1px solid var(--grid); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr.flagged { background: var(--critical-wash); }
+  tbody tr.flagged td:first-child { font-weight: 640; }
+  .flag-pill {
+    display: inline-block; margin-left: 7px; padding: 1px 6px; border-radius: 4px;
+    background: var(--critical); color: #fff; font-size: 10px; font-weight: 650;
+    letter-spacing: 0.03em; vertical-align: 1px;
+  }
+
+  footer.method { margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--border); }
+  footer.method h2 { font-size: 13px; font-weight: 620; margin: 0 0 10px; letter-spacing: 0.02em; }
+  footer.method p { font-size: 13px; color: var(--text-secondary); margin: 0 0 12px; max-width: 76ch; }
+  pre {
+    background: var(--page); border: 1px solid var(--border); border-radius: 7px;
+    padding: 13px 15px; overflow-x: auto; font-size: 12px; line-height: 1.6;
+    color: var(--text-secondary); margin: 0 0 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .src { font-size: 12px; color: var(--muted); }
+</style>
+
+<div class="viz-root">
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Data quality · GHCND · Washington Reagan National (USW00013743)</div>
+    <h1>1941 is a half-year wearing a full year's clothes</h1>
+    <p class="standfirst">
+      Temperature, precipitation, and snow records at this station all begin on 16 June 1941 —
+      but the file carries a full 365 rows for that year, and any naive yearly rollup happily
+      reports an annual value computed from 199 days. The result is the hottest year in an
+      86-year record. It never happened.
+    </p>
+  </header>
+
+  <div class="verdict">
+    <span class="verdict-icon" aria-hidden="true">▲</span>
+    <div class="verdict-body">
+      <strong>Claim verified.</strong> TMAX, TMIN, PRCP and SNOW share an identical first
+      non-null date of 1941-06-16, and 1941 carries exactly 199 days — contiguous, no gaps
+      after the start. The 166 missing days are January through 15 June: the five coldest
+      months of the year.
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="tile">
+      <div class="tile-label">Days of data in 1941</div>
+      <div class="tile-value">199 <span class="unit">of 365</span></div>
+      <div class="tile-sub">54.5% of the year · 166 days absent</div>
+    </div>
+    <div class="tile">
+      <div class="tile-label">Reported 1941 annual mean</div>
+      <div class="tile-value">64.5<span class="unit">°F</span></div>
+      <div class="tile-sub">Hottest in the record, 1941–2026</div>
+    </div>
+    <div class="tile">
+      <div class="tile-label">Overstated by</div>
+      <div class="tile-value" style="color:var(--critical)">+6.4<span class="unit" style="color:var(--critical)">°F</span></div>
+      <div class="tile-sub">vs. 58.1°F reconstructed from normals</div>
+    </div>
+  </div>
+
+  <!-- PANEL A -->
+  <div class="card">
+    <h2 class="card-title">The artifact: 1941 is the hottest year on record</h2>
+    <p class="card-sub">
+      Annual mean temperature, computed the naive way — <code>avg((TMAX+TMIN)/2) GROUP BY year</code>,
+      no coverage guard. The two years missing more than half their days are flagged. Neither is
+      marked as partial anywhere in the file; both plot as ordinary points.
+    </p>
+    <div class="legend">
+      <span class="legend-item"><span class="swatch" style="background:var(--series-1)"></span>Complete year (365–366 days)</span>
+      <span class="legend-item"><span class="swatch dot" style="background:var(--critical)"></span>Partial year — under 200 days</span>
+      <span class="legend-item"><span class="swatch dot" style="background:transparent;border:2px solid var(--muted)"></span>1941 reconstructed from normals</span>
+    </div>
+    <div class="chart-scroll"><svg id="chartA" viewBox="0 0 1000 380" role="img"
+      aria-label="Annual mean temperature 1941 to 2026. 1941 spikes to 64.5 degrees, far above every other year, because it only contains 199 days of data."></svg></div>
+  </div>
+
+  <!-- PANEL B -->
+  <div class="card">
+    <h2 class="card-title">The gap: it swallowed the cold half of the year</h2>
+    <p class="card-sub">
+      Where the missing 166 days sit in the seasonal cycle. The gray curve is the 1942–1971
+      normal at this station; the blue curve is what 1941 actually recorded. The record starts
+      three weeks before the annual temperature peak — so 1941's average is built almost
+      entirely from summer and autumn.
+    </p>
+    <div class="legend">
+      <span class="legend-item"><span class="swatch" style="background:var(--series-1)"></span>1941 observed (from 16 June)</span>
+      <span class="legend-item"><span class="swatch" style="background:var(--baseline)"></span>1942–1971 normal</span>
+      <span class="legend-item"><span class="swatch block" style="background:var(--gap-fill);border:1px solid var(--border)"></span>No data in 1941</span>
+    </div>
+    <div class="chart-scroll"><svg id="chartB" viewBox="0 0 1000 400" role="img"
+      aria-label="Monthly temperature through the year. January through mid-June 1941 has no data, and those are the coldest months, averaging 48 degrees. The recorded months are the warmest."></svg></div>
+  </div>
+
+  <!-- PANEL C -->
+  <div class="card">
+    <h2 class="card-title">Coverage per year: two truncated ends</h2>
+    <p class="card-sub">
+      Days of temperature data per year. Every year from 1942 to 2025 is complete. The record is
+      clipped at both ends — 1941 at the start and 2026 at the end — and they bias in
+      <em>opposite</em> directions, because each is missing a different season.
+    </p>
+    <div class="chart-scroll"><svg id="chartC" viewBox="0 0 1000 210" role="img"
+      aria-label="Days of data per year. All years 1942 to 2025 have 365 or 366 days. 1941 has 199 and 2026 has 192."></svg></div>
+    <details class="table-view">
+      <summary>▸ Table view — all 86 years</summary>
+      <div class="table-scroll"><table id="dataTable">
+        <thead><tr><th>Year</th><th>Days of data</th><th>Coverage</th><th>Reported mean (°F)</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </details>
+  </div>
+
+  <footer class="method">
+    <h2>How this was checked</h2>
+    <p>
+      Every figure here comes from DuckDB reading <code>data/4354766.csv</code> (32,821 daily rows,
+      1936-09-01 → 2026-07-11) directly. The two load-bearing queries:
+    </p>
+<pre>-- All four variables share one start date
+SELECT 'TMAX' v, min(DATE) FROM t WHERE TMAX IS NOT NULL
+UNION ALL SELECT 'TMIN', min(DATE) FROM t WHERE TMIN IS NOT NULL
+UNION ALL SELECT 'PRCP', min(DATE) FROM t WHERE PRCP IS NOT NULL
+UNION ALL SELECT 'SNOW', min(DATE) FROM t WHERE SNOW IS NOT NULL;
+--  →  all four: 1941-06-16
+
+-- 365 rows, 199 of them carrying data
+SELECT count(*) rows, count(TMAX) days
+FROM t WHERE year(DATE) = 1941;
+--  →  rows = 365, days = 199</pre>
+    <p>
+      The 166 absent days are present in the file as rows with empty measurement columns, which is
+      why a row count never catches this and a <code>count(TMAX)</code> does. The reconstructed
+      58.1°F fills 1941's missing window with the 1942–1971 monthly normals and re-averages across
+      a full 365 days; it lands squarely among 1941's neighbours (56.6–59.1°F), whereas the
+      reported 64.5°F does not.
+    </p>
+    <p>
+      Snow is a partial exception worth stating plainly: 1941 totals 0.0 inches, but 1943 also
+      records 0.0 across the same June–December window, and December 1941's daily rows look
+      ordinary. That zero is a real snowless season, not a second defect — though the annual
+      figure is still wrong, since a normal January–May carries 12.9 inches.
+    </p>
+    <p class="src">
+      Source: NOAA NCEI Global Historical Climatology Network Daily, station USW00013743 —
+      Washington Reagan National Airport, VA US. Temperatures °F; means computed as (TMAX+TMIN)/2.
+    </p>
+  </footer>
+
+</div>
+</div>
+
+<div class="tooltip" id="tip"></div>
+
+<script>
+(function () {
+  const YEARS = [[1941,199,64.45],[1942,365,56.92],[1943,365,56.71],[1944,366,56.65],[1945,365,57.21],[1946,365,58.16],[1947,365,56.66],[1948,366,56.62],[1949,365,59.12],[1950,365,56.96],[1951,365,57.64],[1952,366,57.61],[1953,365,58.98],[1954,365,57.71],[1955,365,57.17],[1956,366,56.34],[1957,365,58.06],[1958,365,55.61],[1959,365,58.97],[1960,366,56.34],[1961,365,56.75],[1962,365,55.88],[1963,365,55.85],[1964,366,57.47],[1965,365,56.89],[1966,365,56.94],[1967,365,56.47],[1968,366,57.55],[1969,365,57.29],[1970,365,57.78],[1971,365,57.97],[1972,366,56.72],[1973,365,59.43],[1974,365,58.84],[1975,365,59.45],[1976,366,57.82],[1977,365,58.66],[1978,365,58.2],[1979,365,58.22],[1980,366,59.59],[1981,365,59.0],[1982,365,57.72],[1983,365,58.46],[1984,366,57.84],[1985,365,58.22],[1986,365,57.86],[1987,365,58.16],[1988,366,57.09],[1989,365,56.99],[1990,365,60.05],[1991,365,60.27],[1992,366,56.76],[1993,365,57.81],[1994,365,58.32],[1995,365,58.02],[1996,366,56.87],[1997,365,58.02],[1998,365,60.05],[1999,365,58.99],[2000,366,57.03],[2001,365,58.56],[2002,365,59.34],[2003,365,56.5],[2004,366,57.99],[2005,365,58.08],[2006,365,59.25],[2007,365,59.12],[2008,366,59.19],[2009,365,57.43],[2010,365,59.85],[2011,365,59.95],[2012,366,61.56],[2013,365,58.9],[2014,365,58.56],[2015,365,60.27],[2016,366,60.41],[2017,365,60.81],[2018,365,59.9],[2019,365,60.67],[2020,366,60.61],[2021,365,60.57],[2022,365,59.53],[2023,365,61.25],[2024,366,61.8],[2025,365,59.53],[2026,192,56.46]];
+
+  const NORMAL = [35.6,37.6,45.2,56.1,65.8,74.4,78.4,76.7,70.2,59.5,48.1,37.8];
+  const OBS41  = {6:76.3,7:77.1,8:75.5,9:72.4,10:64.4,11:50.1,12:41.4};
+  const MSTART = [1,32,60,91,121,152,182,213,244,274,305,335,366];
+  const MNAME  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const GAP_END = 167;              // 16 June = day-of-year 167
+  const RECON_41 = 58.08;
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+  const isPartial = d => d < 300;
+  const tip = document.getElementById('tip');
+
+  function showTip(html, evt) {
+    tip.innerHTML = html;
+    tip.style.opacity = '1';
+    const r = tip.getBoundingClientRect();
+    let x = evt.clientX + 14, y = evt.clientY - r.height - 12;
+    if (x + r.width > innerWidth - 8) x = evt.clientX - r.width - 14;
+    if (y < 8) y = evt.clientY + 18;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  }
+  const hideTip = () => { tip.style.opacity = '0'; };
+
+  /* ---------------- PANEL A : annual mean, emphasis on partial years ---------------- */
+  (function () {
+    const svg = document.getElementById('chartA');
+    const W = 1000, H = 380, m = { t: 26, r: 26, b: 44, l: 52 };
+    const pw = W - m.l - m.r, ph = H - m.t - m.b;
+    const x = i => m.l + (i / (YEARS.length - 1)) * pw;
+    const yMin = 54, yMax = 66;
+    const y = v => m.t + ph - ((v - yMin) / (yMax - yMin)) * ph;
+
+    for (let v = yMin; v <= yMax; v += 2) {
+      svg.appendChild(el('line', { class: 'gl', x1: m.l, x2: m.l + pw, y1: y(v), y2: y(v) }));
+      const t = el('text', { class: 'tick', x: m.l - 9, y: y(v) + 4, 'text-anchor': 'end' });
+      t.textContent = v + '°';
+      svg.appendChild(t);
+    }
+    const at = el('text', { class: 'axis-title', x: m.l - 40, y: m.t - 11 });
+    at.textContent = 'Annual mean °F';
+    svg.appendChild(at);
+
+    YEARS.forEach((d, i) => {
+      if (d[0] % 10 !== 0) return;
+      const t = el('text', { class: 'tick', x: x(i), y: H - m.b + 19, 'text-anchor': 'middle' });
+      t.textContent = d[0];
+      svg.appendChild(t);
+    });
+    svg.appendChild(el('line', { class: 'axis-line', x1: m.l, x2: m.l + pw, y1: m.t + ph, y2: m.t + ph }));
+
+    // the naive line, spike and all
+    let dpath = '';
+    YEARS.forEach((d, i) => { dpath += (i ? 'L' : 'M') + x(i) + ' ' + y(d[2]); });
+    svg.appendChild(el('path', { d: dpath, fill: 'none', stroke: 'var(--series-1)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+
+    // reconstructed 1941 — hollow marker + leader showing the error
+    svg.appendChild(el('line', { class: 'leader', x1: x(0), x2: x(0), y1: y(YEARS[0][2]) + 7, y2: y(RECON_41) - 6 }));
+    svg.appendChild(el('circle', { cx: x(0), cy: y(RECON_41), r: 4.5, fill: 'var(--surface-1)', stroke: 'var(--muted)', 'stroke-width': 2 }));
+    const rl = el('text', { class: 'annot', x: x(0) + 12, y: y(RECON_41) + 4 });
+    rl.textContent = '58.1° reconstructed';
+    svg.appendChild(rl);
+
+    // partial-year markers, with 2px surface ring
+    YEARS.forEach((d, i) => {
+      if (!isPartial(d[1])) return;
+      svg.appendChild(el('circle', { cx: x(i), cy: y(d[2]), r: 6, fill: 'var(--surface-1)' }));
+      svg.appendChild(el('circle', { cx: x(i), cy: y(d[2]), r: 4.5, fill: 'var(--critical)' }));
+    });
+
+    // direct labels on the two flagged points
+    const l41 = el('text', { class: 'annot-strong', x: x(0) + 13, y: y(64.45) - 5 });
+    l41.textContent = '1941 · 64.5° from 199 days';
+    svg.appendChild(l41);
+    const l26 = el('text', { class: 'annot-strong', x: x(YEARS.length - 1) - 8, y: y(56.46) + 21, 'text-anchor': 'end' });
+    l26.textContent = '2026 · 192 days';
+    svg.appendChild(l26);
+    const l26b = el('text', { class: 'annot', x: x(YEARS.length - 1) - 8, y: y(56.46) + 35, 'text-anchor': 'end' });
+    l26b.textContent = 'reads cold — no autumn yet';
+    svg.appendChild(l26b);
+
+    // crosshair + hit layer
+    const cross = el('line', { class: 'gl', y1: m.t, y2: m.t + ph, opacity: 0 });
+    cross.style.stroke = 'var(--muted)';
+    svg.appendChild(cross);
+    const hov = el('circle', { r: 4.5, fill: 'var(--series-1)', stroke: 'var(--surface-1)', 'stroke-width': 2, opacity: 0 });
+    svg.appendChild(hov);
+
+    const hit = el('rect', { x: m.l, y: m.t, width: pw, height: ph, fill: 'transparent' });
+    svg.appendChild(hit);
+    hit.addEventListener('mousemove', e => {
+      const r = svg.getBoundingClientRect();
+      const sx = (e.clientX - r.left) * (W / r.width);
+      let i = Math.round(((sx - m.l) / pw) * (YEARS.length - 1));
+      i = Math.max(0, Math.min(YEARS.length - 1, i));
+      const d = YEARS[i], part = isPartial(d[1]);
+      cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('opacity', 0.5);
+      hov.setAttribute('cx', x(i)); hov.setAttribute('cy', y(d[2]));
+      hov.setAttribute('fill', part ? 'var(--critical)' : 'var(--series-1)');
+      hov.setAttribute('opacity', 1);
+      showTip('<div class="tt-title">' + d[0] + '</div>' +
+        '<div class="tt-row"><span>Reported mean</span><b>' + d[2].toFixed(1) + '°F</b></div>' +
+        '<div class="tt-row"><span>Days of data</span><b>' + d[1] + '</b></div>' +
+        (part ? '<div class="tt-flag">▲ Partial year — ' + Math.round(d[1] / 3.65) + '% coverage</div>' : ''), e);
+    });
+    hit.addEventListener('mouseleave', () => { hideTip(); cross.setAttribute('opacity', 0); hov.setAttribute('opacity', 0); });
+  })();
+
+  /* ---------------- PANEL B : the gap against the seasonal cycle ---------------- */
+  (function () {
+    const svg = document.getElementById('chartB');
+    const W = 1000, H = 400, m = { t: 30, r: 130, b: 46, l: 52 };
+    const pw = W - m.l - m.r, ph = H - m.t - m.b;
+    const x = doy => m.l + ((doy - 1) / 365) * pw;
+    const yMin = 30, yMax = 85;
+    const y = v => m.t + ph - ((v - yMin) / (yMax - yMin)) * ph;
+    const mid = i => (MSTART[i] + MSTART[i + 1] - 1) / 2;
+
+    // the gap itself
+    svg.appendChild(el('rect', { x: x(1), y: m.t, width: x(GAP_END) - x(1), height: ph, fill: 'var(--gap-fill)' }));
+    svg.appendChild(el('line', { x1: x(GAP_END), x2: x(GAP_END), y1: m.t, y2: m.t + ph, stroke: 'var(--critical)', 'stroke-width': 2 }));
+
+    for (let v = 30; v <= 85; v += 10) {
+      svg.appendChild(el('line', { class: 'gl', x1: m.l, x2: m.l + pw, y1: y(v), y2: y(v) }));
+      const t = el('text', { class: 'tick', x: m.l - 9, y: y(v) + 4, 'text-anchor': 'end' });
+      t.textContent = v + '°';
+      svg.appendChild(t);
+    }
+    const at = el('text', { class: 'axis-title', x: m.l - 40, y: m.t - 13 });
+    at.textContent = 'Monthly mean °F';
+    svg.appendChild(at);
+
+    MNAME.forEach((n, i) => {
+      const t = el('text', { class: 'tick', x: x(mid(i)), y: H - m.b + 19, 'text-anchor': 'middle' });
+      t.textContent = n;
+      svg.appendChild(t);
+    });
+    svg.appendChild(el('line', { class: 'axis-line', x1: m.l, x2: m.l + pw, y1: m.t + ph, y2: m.t + ph }));
+
+    // normal curve
+    let np = '';
+    NORMAL.forEach((v, i) => { np += (i ? 'L' : 'M') + x(mid(i)) + ' ' + y(v); });
+    svg.appendChild(el('path', { d: np, fill: 'none', stroke: 'var(--baseline)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+    const nl = el('text', { class: 'annot', x: x(mid(11)) + 11, y: y(NORMAL[11]) + 4 });
+    nl.textContent = 'normal';
+    svg.appendChild(nl);
+
+    // 1941 observed — June plotted at the midpoint of 16–30 June
+    const obsPts = [[174, OBS41[6]]];
+    for (let mo = 7; mo <= 12; mo++) obsPts.push([mid(mo - 1), OBS41[mo]]);
+    let op = '';
+    obsPts.forEach((p, i) => { op += (i ? 'L' : 'M') + x(p[0]) + ' ' + y(p[1]); });
+    svg.appendChild(el('path', { d: op, fill: 'none', stroke: 'var(--series-1)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+    obsPts.forEach(p => {
+      svg.appendChild(el('circle', { cx: x(p[0]), cy: y(p[1]), r: 5.5, fill: 'var(--surface-1)' }));
+      svg.appendChild(el('circle', { cx: x(p[0]), cy: y(p[1]), r: 4, fill: 'var(--series-1)' }));
+    });
+    const ol = el('text', { class: 'annot', x: x(mid(11)) + 11, y: y(OBS41[12]) + 4 });
+    ol.textContent = '1941';
+    svg.appendChild(ol);
+
+    // gap labels
+    const g1 = el('text', { class: 'annot-strong', x: x(84), y: m.t + 34, 'text-anchor': 'middle' });
+    g1.textContent = '166 days, no data';
+    svg.appendChild(g1);
+    const g2 = el('text', { class: 'annot', x: x(84), y: m.t + 52, 'text-anchor': 'middle' });
+    g2.textContent = '1 Jan – 15 Jun 1941';
+    svg.appendChild(g2);
+    const g3 = el('text', { class: 'annot', x: x(84), y: m.t + 69, 'text-anchor': 'middle' });
+    g3.textContent = 'these months average 48.2°';
+    svg.appendChild(g3);
+
+    // start-of-record callout
+    const s1 = el('text', { class: 'annot-strong', x: x(GAP_END) + 8, y: m.t + 14 });
+    s1.textContent = 'record begins 16 Jun';
+    s1.setAttribute('fill', 'var(--critical)');
+    svg.appendChild(s1);
+
+    // the reported mean, drawn where it lands in the seasonal cycle
+    svg.appendChild(el('line', { x1: m.l, x2: m.l + pw, y1: y(64.45), y2: y(64.45), stroke: 'var(--critical)', 'stroke-width': 1.5, opacity: 0.55 }));
+    const r1 = el('text', { class: 'annot-strong', x: m.l + pw + 8, y: y(64.45) - 3 });
+    r1.setAttribute('fill', 'var(--critical)');
+    r1.textContent = '64.5° reported';
+    svg.appendChild(r1);
+    const r2 = el('text', { class: 'annot', x: m.l + pw + 8, y: y(64.45) + 12 });
+    r2.textContent = 'for all of 1941';
+    svg.appendChild(r2);
+
+    svg.appendChild(el('line', { x1: m.l, x2: m.l + pw, y1: y(RECON_41), y2: y(RECON_41), stroke: 'var(--muted)', 'stroke-width': 1.5, opacity: 0.7 }));
+    const t1 = el('text', { class: 'annot-strong', x: m.l + pw + 8, y: y(RECON_41) + 1 });
+    t1.textContent = '58.1° actual';
+    svg.appendChild(t1);
+    const t2 = el('text', { class: 'annot', x: m.l + pw + 8, y: y(RECON_41) + 16 });
+    t2.textContent = 'reconstructed';
+    svg.appendChild(t2);
+
+    // per-month hover
+    MNAME.forEach((n, i) => {
+      const x0 = x(MSTART[i]), x1 = x(MSTART[i + 1]);
+      const r = el('rect', { x: x0, y: m.t, width: x1 - x0, height: ph, fill: 'transparent' });
+      svg.appendChild(r);
+      r.addEventListener('mousemove', e => {
+        const has = OBS41[i + 1] !== undefined;
+        showTip('<div class="tt-title">' + n + ' 1941</div>' +
+          '<div class="tt-row"><span>1942–71 normal</span><b>' + NORMAL[i].toFixed(1) + '°F</b></div>' +
+          (has ? '<div class="tt-row"><span>1941 observed</span><b>' + OBS41[i + 1].toFixed(1) + '°F</b></div>'
+               : '<div class="tt-row"><span>1941 observed</span><b>—</b></div>') +
+          (has ? (i === 5 ? '<div class="tt-flag">▲ Partial — 15 of 30 days</div>' : '')
+               : '<div class="tt-flag">▲ No data — 0 of ' + (MSTART[i + 1] - MSTART[i]) + ' days</div>'), e);
+      });
+      r.addEventListener('mouseleave', hideTip);
+    });
+  })();
+
+  /* ---------------- PANEL C : coverage per year ---------------- */
+  (function () {
+    const svg = document.getElementById('chartC');
+    const W = 1000, H = 210, m = { t: 22, r: 26, b: 40, l: 52 };
+    const pw = W - m.l - m.r, ph = H - m.t - m.b;
+    const band = pw / YEARS.length;
+    const bw = Math.min(24, band - 2);           // 2px surface gap between neighbours
+    const y = v => m.t + ph - (v / 400) * ph;
+
+    [0, 200, 365].forEach(v => {
+      svg.appendChild(el('line', { class: 'gl', x1: m.l, x2: m.l + pw, y1: y(v), y2: y(v) }));
+      const t = el('text', { class: 'tick', x: m.l - 9, y: y(v) + 4, 'text-anchor': 'end' });
+      t.textContent = v;
+      svg.appendChild(t);
+    });
+    const at = el('text', { class: 'axis-title', x: m.l - 40, y: m.t - 8 });
+    at.textContent = 'Days of data';
+    svg.appendChild(at);
+
+    YEARS.forEach((d, i) => {
+      const cx = m.l + band * (i + 0.5);
+      const part = isPartial(d[1]);
+      const h = ph - (y(d[1]) - m.t);
+      const r = el('rect', {
+        x: cx - bw / 2, y: y(d[1]), width: bw, height: h,
+        fill: part ? 'var(--critical)' : 'var(--series-1)', rx: 3
+      });
+      svg.appendChild(r);
+      // generous hit target — full band, full height
+      const hit = el('rect', { x: m.l + band * i, y: m.t, width: band, height: ph, fill: 'transparent' });
+      svg.appendChild(hit);
+      hit.addEventListener('mousemove', e => showTip(
+        '<div class="tt-title">' + d[0] + '</div>' +
+        '<div class="tt-row"><span>Days of data</span><b>' + d[1] + '</b></div>' +
+        '<div class="tt-row"><span>Coverage</span><b>' + Math.round(d[1] / 3.65) + '%</b></div>' +
+        '<div class="tt-row"><span>Reported mean</span><b>' + d[2].toFixed(1) + '°F</b></div>' +
+        (part ? '<div class="tt-flag">▲ Partial year</div>' : ''), e));
+      hit.addEventListener('mouseleave', hideTip);
+    });
+
+    YEARS.forEach((d, i) => {
+      if (!isPartial(d[1])) return;
+      const cx = m.l + band * (i + 0.5);
+      const anchor = i === 0 ? 'start' : 'end';
+      const dx = i === 0 ? -2 : 4;
+      const t = el('text', { class: 'annot-strong', x: cx + dx, y: y(d[1]) - 8, 'text-anchor': anchor });
+      t.textContent = d[1];
+      svg.appendChild(t);
+    });
+
+    svg.appendChild(el('line', { class: 'axis-line', x1: m.l, x2: m.l + pw, y1: m.t + ph, y2: m.t + ph }));
+    [1941, 1960, 1980, 2000, 2020, 2026].forEach(yr => {
+      const i = YEARS.findIndex(d => d[0] === yr);
+      if (i < 0) return;
+      const t = el('text', { class: 'tick', x: m.l + band * (i + 0.5), y: H - m.b + 19, 'text-anchor': 'middle' });
+      t.textContent = yr;
+      svg.appendChild(t);
+    });
+  })();
+
+  /* ---------------- table view ---------------- */
+  (function () {
+    const tb = document.querySelector('#dataTable tbody');
+    YEARS.forEach(d => {
+      const part = isPartial(d[1]);
+      const tr = document.createElement('tr');
+      if (part) tr.className = 'flagged';
+      tr.innerHTML = '<td>' + d[0] + (part ? '<span class="flag-pill">PARTIAL</span>' : '') + '</td>' +
+        '<td>' + d[1] + '</td><td>' + Math.round(d[1] / 3.65) + '%</td><td>' + d[2].toFixed(1) + '</td>';
+      tb.appendChild(tr);
+    });
+  })();
+})();
+</script>
+</body>
+</html>
